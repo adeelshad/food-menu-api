@@ -1,0 +1,11 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items/{{id}}
+method: DELETE
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC16: status code is 200", function () { pm.response.to.have.status(200); });
+      pm.test("TC16: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC16: confirmation message returned", function () { const body = pm.response.json(); pm.expect(body.message).to.include('deleted'); });
+    language: text/javascript
+order: 16000

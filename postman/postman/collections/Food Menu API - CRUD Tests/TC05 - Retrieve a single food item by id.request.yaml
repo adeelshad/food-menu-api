@@ -1,0 +1,11 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items/{{id}}
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC05: status code is 200", function () { pm.response.to.have.status(200); });
+      pm.test("TC05: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC05: returns the requested record", function () { const body = pm.response.json(); pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('id'))); pm.expect(body.name).to.eql('Chicken Karahi'); });
+    language: text/javascript
+order: 5000

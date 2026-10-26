@@ -1,0 +1,16 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{ "name": "Broken", '
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC12: status code is 400", function () { pm.response.to.have.status(400); });
+      pm.test("TC12: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC12: malformed JSON error returned", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Malformed JSON'); });
+    language: text/javascript
+order: 12000

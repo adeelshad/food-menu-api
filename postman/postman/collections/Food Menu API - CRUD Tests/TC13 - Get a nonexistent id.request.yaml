@@ -1,0 +1,11 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items/9999
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC13: status code is 404", function () { pm.response.to.have.status(404); });
+      pm.test("TC13: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC13: Not Found error returned", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Not Found'); });
+    language: text/javascript
+order: 13000

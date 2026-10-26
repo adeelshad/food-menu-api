@@ -1,0 +1,4 @@
+$kind: collection
+description: Postman tests for the Restaurant Food Menu REST API (Express + SQLite).
+variables:
+  id: ""

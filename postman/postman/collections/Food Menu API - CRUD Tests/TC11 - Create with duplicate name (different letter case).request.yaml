@@ -1,0 +1,21 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "mango lassi",
+      "category": "Beverage",
+      "price": 300
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC11: status code is 409", function () { pm.response.to.have.status(409); });
+      pm.test("TC11: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC11: conflict error returned", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Conflict'); });
+    language: text/javascript
+order: 11000

@@ -1,0 +1,11 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items/{{id}}
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC07: status code is 200", function () { pm.response.to.have.status(200); });
+      pm.test("TC07: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC07: database holds updated values", function () { const body = pm.response.json(); pm.expect(body.price).to.eql(1600); pm.expect(body.isAvailable).to.eql(false); });
+    language: text/javascript
+order: 7000

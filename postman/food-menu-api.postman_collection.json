@@ -1,0 +1,701 @@
+{
+  "info": {
+    "name": "Food Menu API - CRUD Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman tests for the Restaurant Food Menu REST API (Express + SQLite)."
+  },
+  "item": [
+    {
+      "name": "TC01 - Create a valid food item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC01: status code is 201\", function () { pm.response.to.have.status(201); });",
+              "pm.test(\"TC01: response is JSON\", function () { pm.response.to.be.json; });",
+              "const body = pm.response.json(); pm.collectionVariables.set(\"id\", body.id);",
+              "pm.test(\"TC01: response contains generated id and same data\", function () { const body = pm.response.json(); pm.expect(body.id).to.be.a('number'); pm.expect(body.name).to.eql('Chicken Karahi'); pm.expect(body.price).to.eql(1450.5); pm.expect(body.isAvailable).to.eql(true); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Chicken Karahi\",\n  \"category\": \"Main Course\",\n  \"price\": 1450.5,\n  \"preparationTime\": 35,\n  \"isAvailable\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC02 - Create a second item (defaults applied)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC02: status code is 201\", function () { pm.response.to.have.status(201); });",
+              "pm.test(\"TC02: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC02: default preparationTime 10 and isAvailable true\", function () { const body = pm.response.json(); pm.expect(body.preparationTime).to.eql(10); pm.expect(body.isAvailable).to.eql(true); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mango Lassi\",\n  \"category\": \"Beverage\",\n  \"price\": 250\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC03 - Retrieve all food items",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC03: status code is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"TC03: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC03: returns an array with both records\", function () { const body = pm.response.json(); pm.expect(body).to.be.an('array'); pm.expect(body.length).to.eql(2); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC04 - Retrieve items filtered by category",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC04: status code is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"TC04: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC04: only Beverage items returned\", function () { const body = pm.response.json(); pm.expect(body.length).to.eql(1); pm.expect(body[0].category).to.eql('Beverage'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items?category=Beverage",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ],
+          "query": [
+            {
+              "key": "category",
+              "value": "Beverage"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC05 - Retrieve a single food item by id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC05: status code is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"TC05: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC05: returns the requested record\", function () { const body = pm.response.json(); pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('id'))); pm.expect(body.name).to.eql('Chicken Karahi'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "{{id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC06 - Update price and availability",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC06: status code is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"TC06: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC06: returned data shows the updated values\", function () { const body = pm.response.json(); pm.expect(body.price).to.eql(1600); pm.expect(body.isAvailable).to.eql(false); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "{{id}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Chicken Karahi\",\n  \"category\": \"Main Course\",\n  \"price\": 1600,\n  \"preparationTime\": 35,\n  \"isAvailable\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC07 - Confirm update persisted in database",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC07: status code is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"TC07: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC07: database holds updated values\", function () { const body = pm.response.json(); pm.expect(body.price).to.eql(1600); pm.expect(body.isAvailable).to.eql(false); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "{{id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC08 - Create with required fields missing",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC08: status code is 400\", function () { pm.response.to.have.status(400); });",
+              "pm.test(\"TC08: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC08: error lists name, category and price problems\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Validation failed'); pm.expect(body.details.length).to.be.at.least(3); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"preparationTime\": 15\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC09 - Create with negative price and wrong types",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC09: status code is 400\", function () { pm.response.to.have.status(400); });",
+              "pm.test(\"TC09: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC09: error mentions category, price and isAvailable\", function () { const body = pm.response.json(); const t = body.details.join(' '); pm.expect(t).to.include('category'); pm.expect(t).to.include('price'); pm.expect(t).to.include('isAvailable'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Bad Item\",\n  \"category\": \"Snack\",\n  \"price\": -50,\n  \"isAvailable\": \"yes\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC10 - Create with price as text",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC10: status code is 400\", function () { pm.response.to.have.status(400); });",
+              "pm.test(\"TC10: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC10: price rejected\", function () { const body = pm.response.json(); pm.expect(body.details.join(' ')).to.include('price'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Text Price\",\n  \"category\": \"Dessert\",\n  \"price\": \"free\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC11 - Create with duplicate name (different letter case)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC11: status code is 409\", function () { pm.response.to.have.status(409); });",
+              "pm.test(\"TC11: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC11: conflict error returned\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Conflict'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"mango lassi\",\n  \"category\": \"Beverage\",\n  \"price\": 300\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC12 - Create with malformed JSON body",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC12: status code is 400\", function () { pm.response.to.have.status(400); });",
+              "pm.test(\"TC12: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC12: malformed JSON error returned\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Malformed JSON'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"name\": \"Broken\", ",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC13 - Get a nonexistent id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC13: status code is 404\", function () { pm.response.to.have.status(404); });",
+              "pm.test(\"TC13: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC13: Not Found error returned\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Not Found'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "9999"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC14 - Update a nonexistent id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC14: status code is 404\", function () { pm.response.to.have.status(404); });",
+              "pm.test(\"TC14: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC14: Not Found error returned\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Not Found'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "9999"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ghost Dish\",\n  \"category\": \"Dessert\",\n  \"price\": 100\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "TC15 - Get with a non-numeric id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC15: status code is 400\", function () { pm.response.to.have.status(400); });",
+              "pm.test(\"TC15: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC15: Invalid id error returned\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Invalid id'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/abc",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "abc"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC16 - Delete an existing food item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC16: status code is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"TC16: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC16: confirmation message returned\", function () { const body = pm.response.json(); pm.expect(body.message).to.include('deleted'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "{{id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC17 - Confirm deleted record cannot be retrieved",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC17: status code is 404\", function () { pm.response.to.have.status(404); });",
+              "pm.test(\"TC17: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC17: Not Found error returned\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Not Found'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "{{id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC18 - Delete the already-deleted record",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"TC18: status code is 404\", function () { pm.response.to.have.status(404); });",
+              "pm.test(\"TC18: response is JSON\", function () { pm.response.to.be.json; });",
+              "pm.test(\"TC18: Not Found error returned\", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Not Found'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/food-items/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "food-items",
+            "{{id}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "id",
+      "value": ""
+    }
+  ]
+}

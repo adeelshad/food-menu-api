@@ -1,0 +1,21 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items/9999
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Ghost Dish",
+      "category": "Dessert",
+      "price": 100
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC14: status code is 404", function () { pm.response.to.have.status(404); });
+      pm.test("TC14: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC14: Not Found error returned", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Not Found'); });
+    language: text/javascript
+order: 14000

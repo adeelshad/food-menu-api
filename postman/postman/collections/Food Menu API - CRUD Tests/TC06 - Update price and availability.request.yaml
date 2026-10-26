@@ -1,0 +1,23 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items/{{id}}
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Chicken Karahi",
+      "category": "Main Course",
+      "price": 1600,
+      "preparationTime": 35,
+      "isAvailable": false
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC06: status code is 200", function () { pm.response.to.have.status(200); });
+      pm.test("TC06: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC06: returned data shows the updated values", function () { const body = pm.response.json(); pm.expect(body.price).to.eql(1600); pm.expect(body.isAvailable).to.eql(false); });
+    language: text/javascript
+order: 6000

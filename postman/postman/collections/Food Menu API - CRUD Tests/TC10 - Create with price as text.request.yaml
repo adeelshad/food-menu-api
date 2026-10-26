@@ -1,0 +1,21 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Text Price",
+      "category": "Dessert",
+      "price": "free"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC10: status code is 400", function () { pm.response.to.have.status(400); });
+      pm.test("TC10: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC10: price rejected", function () { const body = pm.response.json(); pm.expect(body.details.join(' ')).to.include('price'); });
+    language: text/javascript
+order: 10000

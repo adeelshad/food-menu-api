@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items?category=Beverage
+method: GET
+queryParams:
+  category: Beverage
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC04: status code is 200", function () { pm.response.to.have.status(200); });
+      pm.test("TC04: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC04: only Beverage items returned", function () { const body = pm.response.json(); pm.expect(body.length).to.eql(1); pm.expect(body[0].category).to.eql('Beverage'); });
+    language: text/javascript
+order: 4000

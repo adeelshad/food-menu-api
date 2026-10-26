@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "preparationTime": 15
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC08: status code is 400", function () { pm.response.to.have.status(400); });
+      pm.test("TC08: response is JSON", function () { pm.response.to.be.json; });
+      pm.test("TC08: error lists name, category and price problems", function () { const body = pm.response.json(); pm.expect(body.error).to.eql('Validation failed'); pm.expect(body.details.length).to.be.at.least(3); });
+    language: text/javascript
+order: 8000

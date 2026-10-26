@@ -1,0 +1,13 @@
+# Use this workspace to collaborate
+workspace:
+  id: cc1776c6-b007-4eee-8694-1eb230975798
+
+localResources:
+  collections:
+    - ../food-menu-api.postman_collection.json
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/Food Menu API - CRUD Tests: cb3ce466-ee76-46a5-88cd-019c5671d7b6

@@ -1,0 +1,24 @@
+$kind: http-request
+url: http://localhost:3001/api/food-items
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Chicken Karahi",
+      "category": "Main Course",
+      "price": 1450.5,
+      "preparationTime": 35,
+      "isAvailable": true
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("TC01: status code is 201", function () { pm.response.to.have.status(201); });
+      pm.test("TC01: response is JSON", function () { pm.response.to.be.json; });
+      const body = pm.response.json(); pm.collectionVariables.set("id", body.id);
+      pm.test("TC01: response contains generated id and same data", function () { const body = pm.response.json(); pm.expect(body.id).to.be.a('number'); pm.expect(body.name).to.eql('Chicken Karahi'); pm.expect(body.price).to.eql(1450.5); pm.expect(body.isAvailable).to.eql(true); });
+    language: text/javascript
+order: 1000
